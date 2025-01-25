@@ -90,3 +90,112 @@ lang.add("Cython");
 lang.add("Java");
 lang // Cython, Java, Python
 ```
+### Класс `PriorityQueue`
+
+Класс `PriorityQueue` расширяет `AbstractQueue` и реализует интерфейс `Queue`. Он создает очередь с приоритетом на основе компаратора очереди.
+```java
+PriorityQueue<Integer> queue = new PriorityQueue<>();
+queue.offer(10);
+queue.offer(3);
+queue.poll(); // 3
+queue.poll(); // 10
+```
+
+Несмотря на возможность прохода по `PriorityQueue` с использованием итератора, ==порядок итераций не определен==. Для корректной работы с `PriorityQueue` потребуется вызывать такие методы, как `offer()` и `poll()`, которые определены в интерфейсе `Queue`.
+### Класс `ArrayDeque`
+
+Создает динамический массив и не имеет ограничений по емкости. Во всех случаях емкость увеличивается по мере необходимости для обработки элементов, добавленных в очередь
+```java
+ArrayDeque<String> adq = new ArrayDeque<>();
+adq.push("A");
+adq.push("B");
+
+while (adq.peek() != null) {
+  System.out.println(adq.pop() + " ");
+}
+```
+### Использование итератора
+
+Пример
+```java
+ArrayList<Integer> arr = new ArrayList<>();
+arr.add(10);
+arr.add(20);
+
+Iterator<Integer> iterArr = arr.iterator();
+while (iterArr.hasNext()) {
+  System.out.println(iterArr.next());
+}
+```
+### Сплитераторы
+
+В версии JDK 8 появился еще один тип итератора под названием _сплитератор_, который определен интерфейсом `Spliterator`.
+
+Возможно, самым важным аспектом интерфейса `Spliterator` является его способность поддерживать параллельную итерацию частей последовательности. Таким образом, `Spliterator` поддерживает параллельное программирование. Тем не менее, реализацию интерфейса `Spliterator` можно применять, даже если не планируется использовать параллельное выполнение. Одна из причин заключается в том, что `Spliterator` предлагает оптимизированный подход, который объединяет операции, реализуемые методами `hasNext()` и `next()`, в один метод. 
+
+Использовать интерфейс `Spliterator` для базовых итерационных задач довольно просто: нужно лишь вызывать метод `tryAdvance()`, пока он не возвратит `false`. Метод `forEachRemaining()` предлагает облегченную альтернативу.
+```java
+ArrayList<String> langs = new ArrayList<>();
+langs.add("Python");
+langs.add("Java");
+langs.add("Cython");
+
+Spliterator<String> langSpl = langs.spliterator();
+langSpl.forEachRemaining((lang) -> System.out.println(lang));
+```
+
+Или так
+```java
+ArrayList<Integer> arr = new ArrayList<>();
+arr.add(1);
+arr.add(2);
+arr.add(3);
+
+ArrayList<Double> sqrts = new ArrayList<>();
+sqrts.spliterator().forEachRemaining((elem) -> sqrts.add(Math.sqrt(elem)));
+```
+### Отображения
+
+Отображения не реализуют интерфейс `Iterable`. Это означает невозможность прохода по отображению с применением цикла `for` в стиле for-each. Кроме того, нельзя получить итератор для отображения. Но можно получить представление отображения в виде коллекции, которое позволяет использовать либо цикл `for` , либо итератор.
+### Класс HashMap
+
+Класс `HashMap` расширяет `AbstractMap` и реализует интерфейс `Map`. Для хранения карты он применяет хеш-таблицу, что позволяет времени выполнения операций `get()` и `put()` оставаться постоянным даже для крупных карт. Емкость стандартная 16, а коэффициент заполнения 0.75.
+
+==Важно отметить, что хеш-карта не гарантирует порядок следования элементов!==
+
+```java
+HashMap<String, Integer> hm = new HashMap<String, Integer>();
+hm.put("Python", 10);
+hm.put("Java", 20);
+hm.put("Scala", 30);
+
+Set<Map.Entry<String, Integer>> hm.entrySet();
+for (Map.Entry<String, Integer> entry : set) {
+  System.out.println(entry.getKey());
+  System.out.println(entry.getValue());
+}
+
+Integer value = set.get("Python"); // 10
+hm.put("Python", value + 10);
+```
+### Класс TreeMap
+
+Класс `TreeMap` предлагает эффективные средства хранения пар "ключ-значение" в _отсортированном порядке_ и обеспечивает быстрое извлечение. Важно отметить, что в отличие от хеш-карты древовидная карта гарантирует, что ее элементы будут отсортированы в порядке возрастная ключей.
+```java
+TreeMap<String, Integer> hm = new TreeMap<String, Integer>();
+hm.put("Python", 10);
+hm.put("Scala", 20);
+hm.put("Java", 30);
+
+Set<Map.Entry<String, Integer>> set = hm.entrySet();
+for (Map.Entry<String, Integer> entry : set) {
+  System.out.println(entry.getKey());
+  System.out.println(entry.getValue());
+}
+
+int value = set.get("Python");
+hm.put("Python", value + 15);
+```
+### Класс LinkedHashMap
+
+Класс `LinkedHashMap` расширяет `HashMap` и поддерживает связный список элементов карты в том порядке, в котором они были вставлены.
