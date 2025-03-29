@@ -86,4 +86,88 @@ public abstract class Pizza {
 
 `Pizza.Builder` является _обобщенным типом с рекурсивным параметром типа_. Это, наряду с абстрактным методом `self()`, обеспечивает корректную работу цепочек методов в подклассах без необходимости приведения типов. Этот обходной путь для того факта, что в Java нет "типа самого себя", известен как идиома _имитации собственного типа_.
 
+Пример
+```java
+public class Person {
+  private String name;
+  private int age;
+  private String email;
+  private double score;
+
+  public static class Builder {
+    // обязательные
+    private String name;
+	private int age;
+
+    // необязательные
+	private String email = "bot@gmail.com";
+	private double score = 0.55;
+
+    public Builder(String name, int age) {
+	  this.name = name;
+	  this.age = age;
+    }
+
+    public Builder withEmail(String email) {
+	  this.email = email;
+	  return this;
+    }
+
+    public Builder withScore(double score) {
+	  this.score = score;
+	  return this;
+    }
+
+    public Person build() {
+	  return new Person(this);
+    }
+  }
+
+  // закрытый конструктор для целевого класса
+  private Person(Builder builder) {
+    this.name = builder.name;
+    this.age = builder.age;
+    this.email = builder.email;
+    this.score = builder.score;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getAge() {
+    return age;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public double getScore() {
+    return score;
+  }
+}
+
+var person = new Person.Builder("Leor Finkelberg", 38)
+  .withEmail("leor.finkelberg@yandex.ru")
+  .build();
+
+person.getName();
+person.getAge();
+```
+
+На Python эту задачу можно было бы решить так
+```python
+import typing as t
+class Person(t.NameTuple):
+    name: str
+    age: int
+    email = "bot@gmail.com"
+    score = 0.55
+
+person = Person("Leor Finkelberg", 38, "leor.finkelberg@yandex.ru")
+person.name
+person.age
+```
+
 Шаблон проектирования Построитель является хорошим выбором при проектировании классов, конструкторы или статические фабрики которых будут иметь большое количество параметров, особенно если многие из этих параметров оказываются необязательными или имеют одинаковый тип.
