@@ -37,7 +37,7 @@ public class MyClass {
 	...
 
     public MyClass build() {
-	  return MyClass(this);
+	  return new MyClass(this);
     }
   }
 
