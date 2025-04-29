@@ -38,3 +38,99 @@ text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));
 Здесь метод `applyStyles` принимает `Set<Style>`, а не `EnumSet<Style>`. Хотя представляется вероятным, что все клиенты будут передовать методу именно `EnumSet`, в общем случае хорошая практика заключается в том, чтобы принимать тип интерфейса, а не тип реализации. Это обеспечивает возможность клиенту передать некую другую реализацию `Set`.
 
 Единственный реальный недостаток `EnumSet` -- невозможность создать неизменяемый `EnumSet`. Пока что можно обернуть `EnumSet` в оболочку `Collections.unmodifiableSet`, но при этом пострадают и краткость, и производительность.
+
+Можно имитировать расширяемое перечисление с использованием интерфейса
+```java
+public interface Operation {
+  double apply(double x, double y);
+}
+
+public enum BasicOperation implements Operation {
+  PLUS("+") {
+    public double apply(double x, double y) {
+	  return x + y;
+    }
+  },
+  MINUS("-") {
+    public double apply(double x, double y) {
+	  return x - y;
+    }
+  },
+  ...
+  ;
+  BasicOperation(String symbol) {
+    this.symbol = symbol;
+  }
+}
+```
+
+Имитированное расширение перечисления
+```java
+public enum ExtendedOperation implements Operation {
+  EXP("^") {
+    public double apply(double x, double y) {
+	  return Math.pow(x, y);
+    }
+  },
+  REMAINDER("%") {
+    public double apply(double x, double y) {
+	  return x % y;
+    }
+  },
+  ...
+  ;
+  ExtendedOperation(String symbol) {
+    this.symbol = symbol;
+  }
+}
+```
+
+Теперь можно использовать ваши новые операции везде, где можно использовать базовые операции, при условии, что API написаны так, что ==принимают тип интерфейса== (`Operation`), а не реализации (`BasicOperation`).
+
+Здесь не нужно объявлять абстрактный метод `apply` в перечислении, как в нерасширяемом перечислении с реализацией метода, зависимого от конкретного экземпляра. Дело в том, что абстрактный метод (`apply`) является членом интерфейса (`Operation`).
+
+Пример использования расширенных операций
+```java
+public static void main(String[] args) {
+  double x = Double.parseDouble(args[0]);
+  double y = Double.parseDouble(args[1]);
+  test(ExtendedOperation.class, x, y);
+}
+
+private static <T extends Enum<T> & Operation>
+void test(Class<T> opEnumType, double x, double y) {
+  for (Operation op : opEnumType.getEnumConstants())
+    System.out.println("%f %s %f = %f%n", x, op, y, op.apply(x, y));
+}
+```
+
+Класс литерала служит в качестве _ограниченного токена типа_. Весьма сложное объявление параметра `opEnumType` гарантирует, что объект `Class` представляет как перечисление, так и подтип `Operation`, что в точности является именно тем, что требуется для перебора всех элементов и выполнения операции, связанной с каждым из них.
+
+Другой альтернативой является передача типа `Collection<? extends Operation>`, который является _ограниченным типом с подстановочным символом_
+```java
+public static void main(String[] args) {
+  double x = Double.parseDouble(args[0]);
+  double y = Double.parseDoubel(args[1]);
+  test(Arrays.asList(ExtendedOperation.values()), x, y);
+}
+
+private static void test(Collection<? extends Operation> opSet, double x, double y) {
+  for (Operation op : opSet) {
+    System.out.printf("%f %s %f = %f%n", x, op, y, op.apply(x, y));
+  }
+}
+```
+
+Тип аннотации с параметром
+```java
+import java.lang.annotation.*;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ExceptionTest {
+  Class<? extends Throwable> value();
+}
+```
+
+Тип параметра этой аннотации -- `Class<? extends Throwable>`. Этот тип с символом подстановки достаточно громоздский. На простом человеческом языке это означает "объект `Class` для некоторого класса, который расширяет класс `Throwable`" и позволяет пользователю аннотации указать любой тип исключения (или ошибки). 
+
+
