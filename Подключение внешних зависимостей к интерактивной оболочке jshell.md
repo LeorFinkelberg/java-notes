@@ -16,5 +16,11 @@ jshell> /env -class-path /opt/libs/commons-lang3-3.13.0.jar:/opt/libs/guava-33.4
 ```java
 jshell> import com.google.common.collect.Lists;
 jshell> import org.apache.commons.lang3.StringUtils;
+jshell> import org.apache.commons.lang3.ArrayUtils;
+jshell> /env -class-path /opt/libs/commons-lang3-3.13.0.jar
 jshell> StringUtils.countMatches("One fish, two fish, three fish", "fish"); // 3
+jshell> int[] getSomething() {
+            return ArrayUtils.EMPTY_INT_ARRAY;
+        }
+...
 ```
