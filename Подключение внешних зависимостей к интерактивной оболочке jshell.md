@@ -6,6 +6,28 @@ NB! Jar-файл (Java Object Layout) можно найти здесь  https://
 // https://mvnrepository.com/artifact/org.openjdk.jol/jol-core
 implementation("org.openjdk.jol:jol-core:0.17")  
 ```
+а примеры работы с библиотекой JOL здесь https://www.baeldung.com/java-memory-layout 
+```java
+>>> import org.openjdk.jol.vm.VM;
+>>> import org.openjdk.jol.info.ClassLayout;
+
+
+>>> int[] nums = {10, 20, 30};
+>>> VM.current().sizeOf(nums); // 32 байта
+
+>>> class SimpleInt {
+  private int state;
+}
+
+>>> System.out.println(ClassLayout.parseClass(SimpleInt.class).toPrintable());
+REPL.$JShell$17$SimpleInt object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     N/A
+  8   4        (object header: class)    N/A
+ 12   4    int SimpleInt.state           N/A
+Instance size: 16 bytes
+Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+```
 
 Примеры использования в библиотек в оболочке jshell
 ```bash
