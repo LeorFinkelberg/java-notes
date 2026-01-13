@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
 	implementation("org.openjdk.jol:jol-core:0.17")
+	implementation("org.apache.commons:commons-lang3:3.18.0")
 }
 ```
 и располагаться в корне проекта, например
@@ -70,6 +71,38 @@ dependencies {
 	implementation("org.openjdk.jol:jol-core:0.17")
 }
 ```
+
+В случае `build.gradle.kts`, для запуска приложения через `./gradlew` 
+```bash
+plugins {  
+    id("java")  
+    application  // <- NB!
+}  
+  
+group = "org.example"  
+version = "1.0-SNAPSHOT"  
+  
+application {  
+    mainClass.set("org.example.Main")  // <- NB!
+}  
+  
+repositories {  
+    mavenCentral()  
+}  
+  
+dependencies {  
+    // Apache Commons Lang 3  
+    implementation("org.apache.commons:commons-lang3:3.18.0")  
+    // JUnit Test  
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))  
+    testImplementation("org.junit.jupiter:junit-jupiter")  
+}  
+  
+tasks.test {  
+    useJUnitPlatform()  
+}
+```
+
 Структура проекта следующая 
 ```bash
 # mip_solver/
