@@ -1,4 +1,5 @@
 В простейшем случае файл `build.gradle` должен иметь следующее содержание (для примера приводится только одна зависимость JOL)
+==NB! `build.gradle.kts` обязательно должен располагаться в корне проекта==
 ```java
 // build.gradle
 
@@ -15,10 +16,10 @@ dependencies {
 	implementation("org.apache.commons:commons-lang3:3.18.0")
 }
 ```
-и располагаться в корне проекта, например
+==и располагаться в корне проекта==, например
 ```bash
 /ваш_проект
-  ├── build.gradle    <-- Здесь добавляем зависимость
+  ├── build.gradle.kts    <-- Здесь добавляем зависимость
   ├── settings.gradle
   ├── src/
   └── gradle/
@@ -31,7 +32,8 @@ $ sdk install gradle 8.14.3  # устанавливаем gradle
 Теперь можно установить Gradle Wrapper (`gradlew`) в проекте; для этого выполняем следующую команду в корне проекта (там же, где лежит `build.gradle`)
 ```bash
 $ gradle -v  # 8.14.3
-$ gradle wrapper --gradle-version 8.14.3
+$ gradle wrapper
+$ gradle wrapper --version 8.14.3
 ```
 В результате в текущей директории появятся:
 - `gradle/wrapper/gradle-wrapper.jar`, 
@@ -54,7 +56,7 @@ plugins {
 }
 
 application {  // NB!
-	mainClass = 'solver.Solver'
+	mainClass = 'solver.Solver' // путь отсчитывается от src/main/java
 }
 
 jar {
